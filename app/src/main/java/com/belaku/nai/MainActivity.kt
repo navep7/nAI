@@ -5,11 +5,13 @@ package com.belaku.nai
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -54,7 +56,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.palette.graphics.Palette
 import androidx.viewpager2.widget.ViewPager2
-import com.belaku.nai.R
 import com.belaku.nai.databinding.ActivityMainBinding
 import com.google.android.ads.nativetemplates.NativeTemplateStyle
 import com.google.android.ads.nativetemplates.TemplateView
@@ -92,6 +93,8 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity(), CoroutineScope {
 
 
+    private lateinit var menuReport: MenuItem
+    private lateinit var menuClear: MenuItem
     private val prodFlag: Boolean = true
     private lateinit var pdGenerateCaptionForQ: ProgressDialog
     private lateinit var txTuts: TextView
@@ -437,6 +440,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             org = aiViewModel.uiState.value.toString();
             if (org.startsWith("Success")) {
                 //      txDesc.clearAnimation()
+                menuReport.setVisible(true)
+                menuClear.setVisible(true)
                 handler.removeCallbacks(runnable)
                 desc = org.substring(org.lastIndexOf(":\n") + 1)
                 if (desc.contains("outputText"))
@@ -457,6 +462,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+
+        if (menu != null) {
+            menuReport = menu.findItem(R.id.report)
+            menuReport.setVisible(false)
+
+            menuClear = menu.findItem(R.id.clear_text)
+            menuClear.setVisible(false)
+        }
+
         return true
     }
 
@@ -493,6 +507,25 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 }
                 dialog.show()
             }
+
+            R.id.report -> {
+
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage("Are you sure you want to report this response as inappropriate ?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes",
+                        DialogInterface.OnClickListener { dialog, id -> makeToast("Reported, Thanks!"); dialog.cancel() })
+                    .setNegativeButton("No",
+                        DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+                val alert: AlertDialog = builder.create()
+                alert.show()
+            }
+
+            R.id.clear_text -> {
+                startActivity(Intent(this, MainActivity::class.java))
+            }
+
+
         }
         return (super.onOptionsItemSelected(item))
     }
@@ -959,6 +992,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             if (org.startsWith("Success")) {
                 //          txDesc.clearAnimation()
                 handler.removeCallbacks(runnable)
+                menuReport.setVisible(true)
+                menuClear.setVisible(true)
                 desc = org.substring(org.lastIndexOf(":\n") + 1)
                 if (desc.contains("outputText"))
                     desc = StringUtils.substringBetween(
