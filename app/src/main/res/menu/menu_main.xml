@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.belaku.nai.MainActivity">
+    <item
+        android:id="@+id/add" android:icon="@android:drawable/sym_action_chat" app:showAsAction="always"   android:title="@string/app_name"/>
+
+</menu>

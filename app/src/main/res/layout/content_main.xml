@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/rl_main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:ads="http://schemas.android.com/apk/res-auto">
+
+
+    <ImageView
+        android:id="@+id/imgv_g"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/banner_adview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tx_tuts"
+        android:text="1. The App auto generates a AI caption / a song Suggestion / a Story , for any of the Picture you select either from gallery Or click with Camera using below buttons \n\n 2. Also you can chat with the AI model upon clicking top-right chat button \n\n 3. You can Ask anything you want answers for, using below Ask AI button."
+        android:textSize="25sp"
+        android:gravity="center"
+        android:layout_margin="@dimen/fab_margin"
+        android:scrollbars="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/banner_adview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="HardcodedText" />
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/banner_adview"
+        ads:adUnitId="@string/banner_adid"
+        ads:adSize="BANNER"
+        android:layout_above="@id/fab_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/banner_adview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" />
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+
+
+    <EditText
+        android:id="@+id/edtx_prompt"
+        android:hint=" Ask, AI"
+        android:gravity="center"
+        android:drawableEnd="@android:drawable/ic_delete"
+        android:inputType="text"
+        android:imeOptions="actionSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/fab_gallery"
+        android:layout_toStartOf="@+id/fab_camera"
+        android:layout_alignBaseline="@+id/fab_camera"
+        tools:ignore="HardcodedText,MissingConstraints" />
+
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_share"
+        android:visibility="invisible"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/nativeTemplateView"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@android:drawable/ic_menu_share" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_share_insta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        android:visibility="invisible"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_above="@+id/fab_share"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_toRightOf="@+id/fab_share"
+        app:srcCompat="@drawable/insta_logo" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_share_fb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_above="@+id/fab_share"
+        android:layout_marginLeft="@dimen/fab_margin"
+        android:layout_toLeftOf="@+id/fab_share"
+        app:srcCompat="@drawable/fb_logo" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_share_tw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_above="@+id/fab_share"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/tw_logo" />
+
+
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nativeTemplateView"
+            android:layout_alignParentStart="true"
+            android:layout_margin="@dimen/fab_margin"
+            android:text="Gallery"
+            app:icon="@android:drawable/ic_menu_gallery" />
+
+
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_above="@+id/nativeTemplateView"
+            android:layout_alignParentEnd="true"
+            android:text="Camera"
+            app:iconGravity="end"
+            app:icon="@android:drawable/ic_menu_camera" />
+
+
+    <com.google.android.ads.nativetemplates.TemplateView
+        android:layout_alignParentBottom="true"
+        android:visibility="invisible"
+        android:id= "@+id/nativeTemplateView"
+        app:gnt_template_type= "@layout/gnt_small_template_view"
+        android:layout_width= "match_parent"
+        android:layout_height= "wrap_content" />
+
+
+
+
+
+</RelativeLayout>

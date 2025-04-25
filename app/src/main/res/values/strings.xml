@@ -1,0 +1,27 @@
+<resources>
+
+    <string name="app_id">ca-app-pub-6424332507659067~1117986994</string>
+    <!--bA : ca-app-pub-6424332507659067/7640222804-->
+    <!--bT : ca-app-pub-3940256099942544/9214589741-->
+    <string name="banner_adid">ca-app-pub-6424332507659067/7640222804</string>
+
+    <!--nA : ca-app-pub-6424332507659067/3305391971-->
+    <!--nT : ca-app-pub-3940256099942544/2247696110-->
+    <string name="native_adid">ca-app-pub-6424332507659067/3305391971</string>
+
+    <!--iA : ca-app-pub-6424332507659067/7281146060-->
+    <!--iT : ca-app-pub-3940256099942544/1033173712-->
+    <string name="intr_adid">ca-app-pub-6424332507659067/7281146060</string>
+
+
+
+    <string name="app_name">nAI</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+
+</resources>
