@@ -423,6 +423,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
 
         pdGenerateCaptionForQ = ProgressDialog(this@MainActivity)
+        pdGenerateCaptionForQ.setCanceledOnTouchOutside(false)
         pdGenerateCaptionForQ.setMessage("loading")
         pdGenerateCaptionForQ.show()
 
@@ -564,6 +565,23 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 txR.background = resources.getDrawable(android.R.drawable.alert_dark_frame)
                 linearLayoutChat.addView(txR)
 
+                var imgR = ImageButton(appContext)
+                imgR.setBackgroundColor(resources.getColor(android.R.color.transparent))
+                imgR.setImageDrawable(resources.getDrawable(android.R.drawable.ic_dialog_alert))
+
+                imgR.setOnClickListener {
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                    builder.setMessage("Are you sure you want to report this response as inappropriate ?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes",
+                            DialogInterface.OnClickListener { dialog, id -> makeToast("Reported, Thanks!"); dialog.cancel() })
+                        .setNegativeButton("No",
+                            DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+                    val alert: AlertDialog = builder.create()
+                    alert.show()
+                }
+
+                linearLayoutChat.addView(imgR)
             }
         }.also { runnable = it }, 1)
 
@@ -662,13 +680,18 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             if (adLoaded) {
                 template.visibility = View.VISIBLE
                 // Showing a simple Toast message to user when an Native ad is shown to the user
-                 Toast.makeText(this@MainActivity, "Native Ad  is loaded and Now showing ad  ", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@MainActivity,
+                    "Native Ad  is loaded and Now showing ad  ",
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
                 //Load the Native ad if it is not loaded
                 loadNativeAd()
 
                 // Showing a simple Toast message to user when Native ad is not loaded
-                   Toast.makeText(this@MainActivity, "Native Ad is not Loaded ", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity, "Native Ad is not Loaded ", Toast.LENGTH_LONG)
+                    .show()
             }
     }
 
