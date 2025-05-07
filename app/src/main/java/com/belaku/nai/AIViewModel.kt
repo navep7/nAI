@@ -21,7 +21,7 @@ class AIViewModel : ViewModel() {
 
     @SuppressLint("SecretInSource")
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash",
+        modelName = "gemini-2.0-flash",
         apiKey = "AIzaSyCLHzTTmYOXcsgzLKyaqQ0UklA8gXqiXU4"
     )
 
