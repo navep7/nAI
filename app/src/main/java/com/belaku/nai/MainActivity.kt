@@ -34,6 +34,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnScrollChangeListener
 import android.view.Window
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     private var imageUri: Uri? = null
     private var mediaPath: String = ""
     private val CAMERA_PIC_REQUEST: Int = 0
-    val items = arrayOf("a caption", "a pop/rock song suggestion", "a story untold")
+    val items = arrayOf("a caption for the pic", "a song suggestion for the pic", "a story about the pic")
 
 
     private var dragThreshold = 10
@@ -170,12 +171,38 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
 
         txContents = ArrayList<String>()
-        //  txContents.add("")
+
+
 
         txTuts = findViewById<TextView>(R.id.tx_tuts)
         txTuts.setMovementMethod(ScrollingMovementMethod())
 
         viewPager2 = findViewById(R.id.viewpager)
+
+        viewPager2!!.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+            }
+
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                if (txContents.get(position).length < 15) {
+                    if (position == 1)
+                        aSong()
+                    else if (position == 2)
+                        aStory()
+                }
+
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+            }
+        })
 
 
 
@@ -305,7 +332,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 if ((keyevent.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     //...
                     // Perform your action on key press here
-                    makeToast("H#R#")
                     // ...
                     return true
                 }
@@ -535,7 +561,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
         aiViewModel.sendPromptQuestion(str)
 
-        //    txContents.add("AI - " + prompt)
         viewPager2Adapter.notifyDataSetChanged()
 
         viewPager2!!.visibility = View.VISIBLE
@@ -644,12 +669,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                         // The mInterstitialAd reference will be null until
                         // an ad is loaded.
                         mInterstitialAd = interstitialAd
-                        makeToast("onAdLoaded")
+                      //  makeToast("onAdLoaded")
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                         // Handle the error
-                        makeToast("Fld - " + loadAdError.toString())
+                     //   makeToast("Fld - " + loadAdError.toString())
                         mInterstitialAd = null
                     }
                 })
@@ -680,18 +705,17 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             if (adLoaded) {
                 template.visibility = View.VISIBLE
                 // Showing a simple Toast message to user when an Native ad is shown to the user
-                Toast.makeText(
+                /*Toast.makeText(
                     this@MainActivity,
                     "Native Ad  is loaded and Now showing ad  ",
                     Toast.LENGTH_LONG
-                ).show()
+                ).show()*/
             } else {
                 //Load the Native ad if it is not loaded
                 loadNativeAd()
 
                 // Showing a simple Toast message to user when Native ad is not loaded
-                Toast.makeText(this@MainActivity, "Native Ad is not Loaded ", Toast.LENGTH_LONG)
-                    .show()
+           //     Toast.makeText(this@MainActivity, "Native Ad is not Loaded ", Toast.LENGTH_LONG).show()
             }
     }
 
@@ -737,167 +761,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    fun textAsBitmap(text: String?, textSize: Float, textColor: Int): Bitmap {
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        paint.textSize = textSize
-        paint.color = textColor
-        paint.textAlign = Paint.Align.LEFT
-        val baseline = -paint.ascent() // ascent() is negative
-        val width = (paint.measureText(text) + 0.0f).toInt() // round
-        val height = (baseline + paint.descent() + 0.0f).toInt()
-        val image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
 
-        val canvas = Canvas(image)
-        canvas.drawText(text!!, 0f, baseline, paint)
-        return image
-    }
 
-    private fun applyFilterAsync(oBitmap: Bitmap, strFilter: String) {
-        Thread {
-            filteredBitmap = oBitmap.copy(Bitmap.Config.ARGB_8888, true)
-            val imageHeight = filteredBitmap.height
-            val imageWidth = filteredBitmap.width
-
-            for (i in 0 until imageWidth) {
-                for (j in 0 until imageHeight) {
-                    // getting each pixel
-
-                    val oldPixel: Int = oBitmap.getPixel(i, j)
-
-                    // each pixel is made from RED_BLUE_GREEN_ALPHA
-                    // so, getting current values of pixel
-                    val oldRed = Color.red(oldPixel)
-                    val oldBlue = Color.blue(oldPixel)
-                    val oldGreen = Color.green(oldPixel)
-                    val oldAlpha = Color.alpha(oldPixel)
-
-                    // write your Algorithm for getting new values
-                    // after calculation of filter
-                    val intensity = (oldRed + oldBlue + oldGreen) / 3
-
-                    if (strFilter.equals("grayScale")) {
-                        val newRed = intensity
-                        val newBlue = intensity
-                        val newGreen = intensity
-                        // applying new pixel values from above to newBitmap
-                        newPixel = Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                        //      main.setImageBitmap(filteredBitmap)
-                    } else if (strFilter.equals("sepia")) {
-                        val newRed = (0.393 * oldRed + 0.769 * oldGreen + 0.189 * oldBlue).toInt()
-                        val newGreen = (0.349 * oldRed + 0.686 * oldGreen + 0.168 * oldBlue).toInt()
-                        val newBlue = (0.272 * oldRed + 0.534 * oldGreen + 0.131 * oldBlue).toInt()
-                        newPixel = Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                        //     main.setImageBitmap(filteredBitmap)
-                    } else if (strFilter.equals("customSepia")) {
-                        var newRed = (0.393 * oldRed + 0.769 * oldGreen + 0.189 * oldBlue).toInt()
-                        var newGreen = (0.349 * oldRed + 0.686 * oldGreen + 0.168 * oldBlue).toInt()
-                        var newBlue = (0.272 * oldRed + 0.534 * oldGreen + 0.131 * oldBlue).toInt()
-
-                        newRed = if (newRed > 255) 255 else newRed
-                        newGreen = if (newGreen > 255) 255 else newGreen
-                        newBlue = if (newBlue > 255) 255 else newBlue
-
-                        // applying new pixel value to newBitmap
-                        // condition for Diagonals ,setting GREY values to particular pixel comes in this range only
-                        newPixel = 0
-                        newPixel = if (i < j - imageHeight / 2) {
-                            // apply sepia at lower
-                            Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                        } else if ((i - (imageHeight / 2)) > j) {
-                            // apply sepia upper
-                            Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                        } else {
-                            //  don't apply sepia
-                            oldPixel
-                        }
-                        //    main.setImageBitmap(filteredBitmap)
-                    } else if (strFilter.equals("pixelate")) {
-
-                    }
-                    filteredBitmap.setPixel(i, j, newPixel)
-                }
-
-            }
-            // Update the UI on the main thread
-            runOnUiThread { imageView.setImageBitmap(filteredBitmap) }
-        }.start()
-    }
-
-    private fun filtering(strFilter: String) {
-
-        // copying to newBitmap for manipulation
-        filteredBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-        // height and width of Image
-        val imageHeight = filteredBitmap.height
-        val imageWidth = filteredBitmap.width
-
-        // traversing each pixel in Image as an 2D Array
-        for (i in 0 until imageWidth) {
-            for (j in 0 until imageHeight) {
-                // getting each pixel
-
-                val oldPixel: Int = originalBitmap.getPixel(i, j)
-
-                // each pixel is made from RED_BLUE_GREEN_ALPHA
-                // so, getting current values of pixel
-                val oldRed = Color.red(oldPixel)
-                val oldBlue = Color.blue(oldPixel)
-                val oldGreen = Color.green(oldPixel)
-                val oldAlpha = Color.alpha(oldPixel)
-
-                // write your Algorithm for getting new values
-                // after calculation of filter
-                val intensity = (oldRed + oldBlue + oldGreen) / 3
-
-                if (strFilter.equals("grayScale")) {
-                    val newRed = intensity
-                    val newBlue = intensity
-                    val newGreen = intensity
-                    // applying new pixel values from above to newBitmap
-                    val newPixel = Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                    filteredBitmap.setPixel(i, j, newPixel)
-                    imageView.setImageBitmap(filteredBitmap)
-                } else if (strFilter.equals("sepia")) {
-                    val newRed = (0.393 * oldRed + 0.769 * oldGreen + 0.189 * oldBlue).toInt()
-                    val newGreen = (0.349 * oldRed + 0.686 * oldGreen + 0.168 * oldBlue).toInt()
-                    val newBlue = (0.272 * oldRed + 0.534 * oldGreen + 0.131 * oldBlue).toInt()
-                    val newPixel = Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                    filteredBitmap.setPixel(i, j, newPixel)
-                    imageView.setImageBitmap(filteredBitmap)
-                } else if (strFilter.equals("customSepia")) {
-                    var newRed = (0.393 * oldRed + 0.769 * oldGreen + 0.189 * oldBlue).toInt()
-                    var newGreen = (0.349 * oldRed + 0.686 * oldGreen + 0.168 * oldBlue).toInt()
-                    var newBlue = (0.272 * oldRed + 0.534 * oldGreen + 0.131 * oldBlue).toInt()
-
-                    newRed = if (newRed > 255) 255 else newRed
-                    newGreen = if (newGreen > 255) 255 else newGreen
-                    newBlue = if (newBlue > 255) 255 else newBlue
-
-                    // applying new pixel value to newBitmap
-                    // condition for Diagonals ,setting GREY values to particular pixel comes in this range only
-                    var newPixel = 0
-                    newPixel = if (i < j - imageHeight / 2) {
-                        // apply sepia at lower
-                        Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                    } else if ((i - (imageWidth / 2)) > j) {
-                        // apply sepia upper
-                        Color.argb(oldAlpha, newRed, newGreen, newBlue)
-                    } else {
-                        //  don't apply sepia
-                        oldPixel
-                    }
-
-                    filteredBitmap.setPixel(i, j, newPixel)
-                    imageView.setImageBitmap(filteredBitmap)
-                } else if (strFilter.equals("pixelate")) {
-
-                }
-            }
-
-        }
-
-    }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -928,7 +793,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             val colorPalette: Palette = Palette.from(originalBitmap).generate()
             clr1 = colorPalette.getLightVibrantColor(Color.WHITE)
 
-            GenerateCaption(originalBitmap, items)
+            viewPager2!!.visibility = View.VISIBLE
+            viewPager2!!.bringToFront()
+
+
+                txContents.add("...a Caption \n\n" )
+                txContents.add("...a Song \n\n" )
+                txContents.add("...a Story \n\n" )
+            viewPager2Adapter.notifyDataSetChanged()
+
+            aCaption()
 
         }
     }
@@ -986,21 +860,19 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     }
 
 
-    private fun GenerateCaption(originalBitmap: Bitmap, prompts: Array<String>) {
+    private fun aSong() {
 
         showNativeAd()
         showBannerAd()
-        showInterstitialAd()
 
         progressSpinner = ProgressDialog(this@MainActivity)
         progressSpinner.setCancelable(false)
         progressSpinner.setCanceledOnTouchOutside(false);
-        progressSpinner.setMessage("Phrasing a Caption...")
+        progressSpinner.setMessage("Penning a Song...")
         progressSpinner.show()
 
-        aiViewModel.sendPrompt(originalBitmap, prompts[0])
+        aiViewModel.sendPrompt(originalBitmap, items[1])
 
-        //    txContents.add("AI - " + prompt)
         viewPager2Adapter.notifyDataSetChanged()
 
         viewPager2!!.visibility = View.VISIBLE
@@ -1024,62 +896,118 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                         "outputText=",
                         desc.get(desc.length - 1).toString()
                     )
-                setText(1, desc.strip())
+            //    setText(1, desc.strip())
+                txContents.set(1,  txContents.get(1) + "\n" + desc.strip())
+                viewPager2Adapter.notifyDataSetChanged()
 
-
-                aiViewModel.sendPrompt(originalBitmap, prompts[1])
                 progressSpinner.dismiss()
-                progressSpinner.setMessage("Penning a Song...")
-                progressSpinner.show()
 
-                var org: String
-                var desc: String
-                handler.postDelayed(java.lang.Runnable {
-                    handler.postDelayed(runnable, 1000)
-                    //        txDesc.append(" .")
-                    org = aiViewModel.uiState.value.toString();
-                    if (org.startsWith("Success")) {
-                        //          txDesc.clearAnimation()
-                        handler.removeCallbacks(runnable)
-                        desc = org.substring(org.lastIndexOf(":\n") + 1)
-                        if (desc.contains("outputText"))
-                            desc = StringUtils.substringBetween(
-                                desc,
-                                "outputText=",
-                                desc.get(desc.length - 1).toString()
-                            )
-                        setText(2, desc.strip())
+            } else if (org.startsWith("Error")) {
+                makeToast("Err Penning a Song - " + org.strip())
+                progressSpinner.dismiss()
+            }
+        }.also { runnable = it }, 1)
 
-                        aiViewModel.sendPrompt(originalBitmap, prompts[2])
-                        progressSpinner.dismiss()
-                        progressSpinner.setMessage("Scripting a Story...")
-                        progressSpinner.show()
 
-                        var org: String
-                        var desc: String
-                        handler.postDelayed(java.lang.Runnable {
-                            handler.postDelayed(runnable, 1000)
-                            //        txDesc.append(" .")
-                            org = aiViewModel.uiState.value.toString();
-                            if (org.startsWith("Success")) {
-                                //          txDesc.clearAnimation()
-                                handler.removeCallbacks(runnable)
-                                desc = org.substring(org.lastIndexOf(":\n") + 1)
-                                if (desc.contains("outputText"))
-                                    desc = StringUtils.substringBetween(
-                                        desc,
-                                        "outputText=",
-                                        desc.get(desc.length - 1).toString()
-                                    )
-                                setText(3, desc.strip())
-                                progressSpinner.dismiss()
+    }
 
-                            }
-                        }.also { runnable = it }, 1)
+    private fun aStory() {
 
-                    }
-                }.also { runnable = it }, 1)
+        showNativeAd()
+        showBannerAd()
 
+        progressSpinner = ProgressDialog(this@MainActivity)
+        progressSpinner.setCancelable(false)
+        progressSpinner.setCanceledOnTouchOutside(false);
+        progressSpinner.setMessage("Scripting a Story...")
+        progressSpinner.show()
+
+        aiViewModel.sendPrompt(originalBitmap, items[2])
+
+        viewPager2Adapter.notifyDataSetChanged()
+
+        viewPager2!!.visibility = View.VISIBLE
+        viewPager2!!.bringToFront()
+
+        var org: String
+        var desc: String
+        handler.postDelayed(java.lang.Runnable {
+            handler.postDelayed(runnable, 1000)
+            //        txDesc.append(" .")
+            org = aiViewModel.uiState.value.toString();
+            if (org.startsWith("Success")) {
+                //          txDesc.clearAnimation()
+                handler.removeCallbacks(runnable)
+                menuReport.setVisible(true)
+                menuClear.setVisible(true)
+                desc = org.substring(org.lastIndexOf(":\n") + 1)
+                if (desc.contains("outputText"))
+                    desc = StringUtils.substringBetween(
+                        desc,
+                        "outputText=",
+                        desc.get(desc.length - 1).toString()
+                    )
+              //  setText(1, desc.strip())
+                txContents.set(2,  txContents.get(2) + "\n" + desc.strip())
+                viewPager2Adapter.notifyDataSetChanged()
+
+                progressSpinner.dismiss()
+
+            } else if (org.startsWith("Error")) {
+                makeToast("Err Scripting a Story - " + org.strip())
+                progressSpinner.dismiss()
+            }
+        }.also { runnable = it }, 1)
+
+
+    }
+
+
+    private fun aCaption() {
+
+        showNativeAd()
+        showBannerAd()
+
+        progressSpinner = ProgressDialog(this@MainActivity)
+        progressSpinner.setCancelable(false)
+        progressSpinner.setCanceledOnTouchOutside(false);
+        progressSpinner.setMessage("Phrasing a Caption...")
+        progressSpinner.show()
+
+        aiViewModel.sendPrompt(originalBitmap, items[0])
+
+        viewPager2Adapter.notifyDataSetChanged()
+
+        viewPager2!!.visibility = View.VISIBLE
+        viewPager2!!.bringToFront()
+
+        var org: String
+        var desc: String
+        handler.postDelayed(java.lang.Runnable {
+            handler.postDelayed(runnable, 1000)
+            //        txDesc.append(" .")
+            org = aiViewModel.uiState.value.toString();
+            if (org.startsWith("Success")) {
+                //          txDesc.clearAnimation()
+                handler.removeCallbacks(runnable)
+                menuReport.setVisible(true)
+                menuClear.setVisible(true)
+                desc = org.substring(org.lastIndexOf(":\n") + 1)
+                if (desc.contains("outputText"))
+                    desc = StringUtils.substringBetween(
+                        desc,
+                        "outputText=",
+                        desc.get(desc.length - 1).toString()
+                    )
+            //    setText(1, desc.strip())
+                txContents.set(0,  txContents.get(0) + "\n" + desc.strip())
+                viewPager2Adapter.notifyDataSetChanged()
+
+              progressSpinner.dismiss()
+
+            } else if (org.startsWith("Error")) {
+                makeToast("Err Phrasing a Caption - " + org.strip())
+                progressSpinner.dismiss()
             }
         }.also { runnable = it }, 1)
 
