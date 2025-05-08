@@ -506,6 +506,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         when (item.itemId) {
             R.id.add ->         //add the function to perform here
             {
+                showInterstitialAd()
                 val dialog = Dialog(this@MainActivity)
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.setCancelable(false)
@@ -536,6 +537,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             }
 
             R.id.report -> {
+
+                showInterstitialAd()
 
                 val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                 builder.setMessage("Are you sure you want to report this response as inappropriate ?")
@@ -669,23 +672,30 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                         // The mInterstitialAd reference will be null until
                         // an ad is loaded.
                         mInterstitialAd = interstitialAd
-                      //  makeToast("onAdLoaded")
+                     //   makeToast("onAdLoaded")
+                        showIAd()
+                     //   mInterstitialAd?.show(MainActivity.this)
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                         // Handle the error
-                     //   makeToast("Fld - " + loadAdError.toString())
+                        makeToast("Fld - " + loadAdError.toString())
                         mInterstitialAd = null
                     }
                 })
 
-            if (Random.nextInt() % 2 == 0)
-                if (mInterstitialAd != null) {
-                    mInterstitialAd?.show(this)
-                } else {
-                    Log.d("TAG", "The interstitial ad wasn't ready yet.")
-                }
+         //   if (Random.nextInt() % 2 == 0)
 
+
+        }
+    }
+
+    private fun showIAd() {
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(this)
+        } else {
+            makeToast("The interstitial ad wasn't ready yet.")
+            Log.d("TAG", "The interstitial ad wasn't ready yet.")
         }
     }
 
